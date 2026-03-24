@@ -1,5 +1,5 @@
 const SoilRecord = require('../models/soil_record.model');
-const OpenAIService = require('../services/openai.service');
+const GroqService = require('../services/groq.service');
 const socketService = require('../services/socket.service');
 const path = require('path');
 const fs = require('fs');
@@ -7,19 +7,16 @@ const fs = require('fs');
 const analyzeSoil = async (req, res) => {
   try {
     const { textInput } = req.body;
-    let imageUrl = null;
+    let imageBuffer = null;
+    let mimeType = null;
 
     if (req.file) {
-      // In a real scenario, we'd convert the local file to base64 for Vision API
-      // if it's not a public URL.
-      const imagePath = req.file.path;
-      const base64Image = fs.readFileSync(imagePath, { encoding: 'base64' });
-      const mimeType = req.file.mimetype;
-      imageUrl = `data:${mimeType};base64,${base64Image}`;
+      imageBuffer = fs.readFileSync(req.file.path);
+      mimeType = req.file.mimetype;
     }
 
-    // Call OpenAI for analysis
-    const analysisResponse = await OpenAIService.analyzeSoil(textInput, imageUrl);
+    // Call Groq (Llama Vision) for analysis
+    const analysisResponse = await GroqService.analyzeSoil(textInput, imageBuffer, mimeType);
 
     // Create a new soil record
     const newRecord = new SoilRecord({

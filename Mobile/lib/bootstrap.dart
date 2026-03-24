@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:agrilo/core/services/app_logger.dart';
+import 'package:agrilo/core/services/storage_service.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
 
@@ -20,7 +22,13 @@ class AppBlocObserver extends BlocObserver {
   }
 }
 
+
 Future<void> bootstrap(FutureOr<Widget> Function() builder) async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await StorageService.init();
+
+  AppLogger.initialize();
+
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };

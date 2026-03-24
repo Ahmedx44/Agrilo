@@ -9,12 +9,19 @@ environment:
 
 dependencies:
   bloc: ^9.2.0
+  dio: ^5.9.2
+  equatable: ^2.0.8
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   flutter_localizations:
     sdk: flutter
+  image_picker: ^1.2.1
   intl: ^0.20.2
+  logger: ^2.7.0
+  shared_preferences: ^2.5.4
+  toastification: ^3.0.3
+
 
 dev_dependencies:
   bloc_lint: ^0.4.0

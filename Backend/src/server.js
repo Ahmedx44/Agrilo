@@ -22,13 +22,29 @@ const io = new Server(server, {
 // Setup Socket.io logic
 socketService.init(io);
 
+const os = require('os');
+
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.info('Connected to MongoDB');
     // Start listening on the HTTP server (not the express app)
-    server.listen(PORT, () => {
-      console.info(`Server is running on port ${PORT}`);
+    server.listen(PORT, '0.0.0.0', () => {
+      console.info(`\n🚀 Server is running on port ${PORT}\n`);
+      
+      console.info('Access the API on your network at the following addresses:');
+      console.info(`- Localhost: http://localhost:${PORT}`);
+      
+      const nets = os.networkInterfaces();
+      for (const name of Object.keys(nets)) {
+        for (const net of nets[name]) {
+          // Skip over non-IPv4 and internal (i.e. 127.0.0.1) addresses
+          if (net.family === 'IPv4' && !net.internal) {
+            console.info(`- Network:   http://${net.address}:${PORT}`);
+          }
+        }
+      }
+      console.info('\n');
     });
   })
   .catch((err) => {

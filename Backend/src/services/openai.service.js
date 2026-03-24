@@ -47,7 +47,7 @@ class OpenAIService {
       });
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4-vision-preview",
+        model: "gpt-4o",
         messages: messages,
         max_tokens: 1000
       });

@@ -1,3 +1,11 @@
+buildscript {
+    extra.set("kotlin_version", "2.2.10")
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 allprojects {
     repositories {
         google()
