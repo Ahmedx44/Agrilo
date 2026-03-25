@@ -1,9 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+
+// Your existing imports
 import 'package:agrilo/core/theme/app_colors.dart';
 import 'package:agrilo/features/dashboard/page/dashboard_page.dart';
 import 'package:agrilo/features/settings/page/settings_page.dart';
 import 'package:agrilo/features/soil/page/soil_analysis_page.dart';
 import 'package:agrilo/features/soil/page/soil_history_page.dart';
-import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,40 +33,62 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: Border(top: BorderSide(color: AppColors.primary.withAlpha(20), width: 1)),
+          border: Border(
+            top: BorderSide(
+              color: AppColors.primary.withAlpha(20),
+              width: 1,
+            ),
+          ),
         ),
-        child: BottomNavigationBar(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          selectedItemColor: AppColors.primary,
-          unselectedItemColor: Colors.grey.shade600,
-          currentIndex: _currentIndex,
+        child: SalomonBottomBar(
+          currentIndex: _currentIndex, // Don't forget to pass the current index!
           onTap: (index) {
             setState(() {
               _currentIndex = index;
             });
           },
-          type: BottomNavigationBarType.fixed,
-          elevation: 0,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined),
-              activeIcon: Icon(Icons.dashboard_rounded),
-              label: 'Dashboard',
+          // Global styling
+          selectedItemColor: AppColors.primary,
+          unselectedItemColor: Colors.grey.withOpacity(0.6),
+          items: [
+            /// Dashboard
+            SalomonBottomBarItem(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedDashboardBrowsing,
+                color: _currentIndex == 0 ? AppColors.primary : Colors.grey,
+              ),
+              title: const Text('Dashboard'),
+              selectedColor: AppColors.primary,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.camera_alt_outlined),
-              activeIcon: Icon(Icons.camera_alt_rounded),
-              label: 'Scan',
+
+            /// Scan
+            SalomonBottomBarItem(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedCctvCamera,
+                color: _currentIndex == 1 ? AppColors.primary : Colors.grey,
+              ),
+              title: const Text('Scan'),
+              selectedColor: AppColors.primary,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history_outlined),
-              activeIcon: Icon(Icons.history_rounded),
-              label: 'History',
+
+            /// History
+            SalomonBottomBarItem(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedClock01,
+                color: _currentIndex == 2 ? AppColors.primary : Colors.grey,
+              ),
+              title: const Text('History'),
+              selectedColor: AppColors.primary,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              activeIcon: Icon(Icons.settings_rounded),
-              label: 'Settings',
+
+            /// Settings
+            SalomonBottomBarItem(
+              icon: HugeIcon(
+                icon: HugeIcons.strokeRoundedSettings02,
+                color: _currentIndex == 3 ? AppColors.primary : Colors.grey,
+              ),
+              title: const Text('Settings'),
+              selectedColor: AppColors.primary,
             ),
           ],
         ),

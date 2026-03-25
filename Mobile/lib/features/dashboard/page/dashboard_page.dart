@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:agrilo/core/theme/app_colors.dart';
 import 'package:agrilo/core/services/storage_service.dart';
 import 'package:agrilo/features/dashboard/cubit/dashboard_cubit.dart';
@@ -31,8 +29,6 @@ class DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<DashboardView> {
-  int _selectedTab = 0;
-
   String _greeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Good Morning!';
@@ -94,91 +90,80 @@ class _DashboardViewState extends State<DashboardView> {
                             color: Theme.of(context).colorScheme.surface,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.notifications_outlined, color: AppColors.primary),
+                          child: Icon(
+                            Icons.notifications_outlined,
+                            color: AppColors.primary,
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 28),
 
-                    // Tab switcher
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        children: [
-                          _buildTab('Soil Overview', 0),
-                          _buildTab('Scan Overview', 1),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
                     if (state.status == DashboardStatus.loading)
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.all(40),
-                          child: CircularProgressIndicator(color: AppColors.primary),
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
                         ),
                       )
                     else if (state.status == DashboardStatus.failure)
                       _buildError(context, state.errorMessage)
                     else ...[
-                      // Main lime card
-                      if (_selectedTab == 0)
-                        _buildSoilOverviewCard(context, state)
-                      else
-                        _buildScanOverviewCard(context, state),
+                        // Main Soil Overview Card
+                        _buildSoilOverviewCard(context, state),
+                        const SizedBox(height: 24),
 
-                      const SizedBox(height: 24),
+                        // Bottom stat cards
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildStatCard(
+                                context,
+                                icon: Icons.science_rounded,
+                                value: '${state.totalTests}',
+                                label: 'Total tests',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildStatCard(
+                                context,
+                                icon: Icons.sentiment_satisfied_alt_rounded,
+                                value: '${state.avgMoisture}%',
+                                label: 'Avg moisture',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildStatCard(
+                                context,
+                                icon: Icons.water_drop_outlined,
+                                value: '${state.avgPH}',
+                                label: 'Avg pH level',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _buildStatCard(
+                                context,
+                                icon: Icons.eco_outlined,
+                                value: '${state.avgNutrients['N'] ?? 0}',
+                                label: 'Avg Nitrogen',
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
 
-                      // Bottom stat cards
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              context,
-                              icon: Icons.science_rounded,
-                              value: '${state.totalTests}',
-                              label: 'Total tests',
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildStatCard(
-                              context,
-                              icon: Icons.sentiment_satisfied_alt_rounded,
-                              value: '${state.avgMoisture}%',
-                              label: 'Avg moisture',
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              context,
-                              icon: Icons.water_drop_outlined,
-                              value: '${state.avgPH}',
-                              label: 'Avg pH level',
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildStatCard(
-                              context,
-                              icon: Icons.eco_outlined,
-                              value: '${state.avgNutrients['N'] ?? 0}',
-                              label: 'Avg Nitrogen',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                        // Scan History Section
+                        _buildScanHistorySection(context, state),
+                      ],
                   ],
                 ),
               ),
@@ -189,40 +174,10 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildTab(String label, int index) {
-    final selected = _selectedTab == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _selectedTab = index),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: selected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: selected
-                ? [BoxShadow(color: Colors.black.withAlpha(15), blurRadius: 8)]
-                : [],
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: selected ? FontWeight.bold : FontWeight.w500,
-              color: selected
-                  ? Colors.black87
-                  : Theme.of(context).textTheme.bodyMedium?.color,
-              fontSize: 14,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSoilOverviewCard(BuildContext context, DashboardState state) {
     final latestScan = state.latestScan;
     String timeAgo = 'No scans yet';
+
     if (latestScan != null) {
       final dateStr = latestScan['createdAt'] as String?;
       if (dateStr != null) {
@@ -273,7 +228,11 @@ class _DashboardViewState extends State<DashboardView> {
                   color: Colors.black.withAlpha(15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.thermostat_outlined, color: Colors.black87, size: 20),
+                child: const Icon(
+                  Icons.thermostat_outlined,
+                  color: Colors.black87,
+                  size: 20,
+                ),
               ),
             ],
           ),
@@ -301,12 +260,15 @@ class _DashboardViewState extends State<DashboardView> {
                       color: Colors.black,
                     ),
                   ),
-                  const Text('PH', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                  const Text(
+                    'PH',
+                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
                 ],
               ),
               const SizedBox(width: 20),
               // Moisture bar
-              _buildNutrientBar('Moisture',  moisture, 100),
+              _buildNutrientBar('Moisture', moisture, 100),
               const SizedBox(width: 10),
               _buildNutrientBar('Nitrogen', n.toDouble(), 100),
               const SizedBox(width: 10),
@@ -328,34 +290,43 @@ class _DashboardViewState extends State<DashboardView> {
     );
   }
 
-  Widget _buildScanOverviewCard(BuildContext context, DashboardState state) {
+  Widget _buildScanHistorySection(BuildContext context, DashboardState state) {
     final history = state.history;
+
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Scan Overview',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+            'Scan History',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 16),
           if (history.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
-                child: Text('No scan history yet.', style: TextStyle(color: Colors.black54)),
+                child: Text(
+                  'No scan history yet.',
+                  style: TextStyle(color: Colors.black54),
+                ),
               ),
             )
           else
             ...history.take(5).map((scan) {
               final dateStr = scan['date'] as String?;
               final date = dateStr != null ? DateTime.tryParse(dateStr) : null;
-              final label = date != null ? DateFormat('MMM d').format(date.toLocal()) : '—';
+              final label = date != null
+                  ? DateFormat('MMM d').format(date.toLocal())
+                  : '—';
               final moisture = scan['moisture'] as int? ?? 0;
               final ph = scan['pH'];
               return Padding(
@@ -363,9 +334,14 @@ class _DashboardViewState extends State<DashboardView> {
                 child: Row(
                   children: [
                     Expanded(
-                        flex: 2,
-                        child: Text(label,
-                            style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87))),
+                      flex: 2,
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                     Expanded(
                       flex: 5,
                       child: ClipRRect(
@@ -373,13 +349,17 @@ class _DashboardViewState extends State<DashboardView> {
                         child: LinearProgressIndicator(
                           value: moisture / 100,
                           minHeight: 10,
-                          backgroundColor: Colors.black.withAlpha(20),
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.black87),
+                          backgroundColor: Colors.black,
+                          valueColor:
+                          const AlwaysStoppedAnimation<Color>( AppColors.primary),
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
-                    Text('pH $ph', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                    Text(
+                      'pH $ph',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ],
                 ),
               );
@@ -401,7 +381,14 @@ class _DashboardViewState extends State<DashboardView> {
         children: [
           Icon(icon, size: 13, color: Colors.black87),
           const SizedBox(width: 4),
-          Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Colors.black87,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -413,7 +400,14 @@ class _DashboardViewState extends State<DashboardView> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Text('${value.toInt()}%', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.black)),
+        Text(
+          '${value.toInt()}%',
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
         const SizedBox(height: 4),
         Container(
           width: 36,
@@ -424,7 +418,10 @@ class _DashboardViewState extends State<DashboardView> {
           ),
         ),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.black54)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: Colors.black54),
+        ),
       ],
     );
   }
@@ -432,13 +429,28 @@ class _DashboardViewState extends State<DashboardView> {
   Widget _buildMiniStat(String label, String value) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 14)),
-        Text(label, style: const TextStyle(fontSize: 10, color: Colors.black54)),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontSize: 14,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 10, color: Colors.black54),
+        ),
       ],
     );
   }
 
-  Widget _buildStatCard(BuildContext context, {required IconData icon, required String value, required String label}) {
+  Widget _buildStatCard(
+      BuildContext context, {
+        required IconData icon,
+        required String value,
+        required String label,
+      }) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -462,7 +474,10 @@ class _DashboardViewState extends State<DashboardView> {
             style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          ),
         ],
       ),
     );
@@ -476,7 +491,10 @@ class _DashboardViewState extends State<DashboardView> {
           const SizedBox(height: 40),
           const Icon(Icons.error_outline, color: AppColors.error, size: 64),
           const SizedBox(height: 16),
-          Text(msg ?? 'Failed to load dashboard', textAlign: TextAlign.center),
+          Text(
+            msg ?? 'Failed to load dashboard',
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: () => context.read<DashboardCubit>().fetchDashboard(),

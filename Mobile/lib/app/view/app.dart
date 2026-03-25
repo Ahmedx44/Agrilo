@@ -21,17 +21,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class App extends StatelessWidget {
   const App({super.key});
 
-  String _getBaseUrl() {
-    if (kIsWeb) return 'http://localhost:4000';
-    if (Platform.isAndroid) return 'http://192.168.0.101:4000';
-    return 'http://192.168.0.101:4000';
-  }
-
   @override
   Widget build(BuildContext context) {
     AppGlobalContext.setContext(context);
     
-    final apiClient = ApiClient.create(baseUrl: _getBaseUrl());
+    final apiClient = ApiClient.create(baseUrl: 'http://192.168.0.101:4000');
     
     return MultiRepositoryProvider(
       providers: [
