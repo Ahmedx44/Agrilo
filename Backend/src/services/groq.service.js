@@ -9,16 +9,15 @@ class GroqService {
 
   async analyzeSoil(textInput, imageBuffer, mimeType) {
     try {
-      const systemPrompt = `You are an agriculture expert, specialized in soil health and crop management.
-Analyze the soil based on the provided input (image, text or both).
-Structure your response clearly for farmers:
-
-1. Condition: A summary of the soil health.
-2. Problems: Specific issues like nutrient deficiency, dryness, disease.
-3. Recommendations: How to fix the soil.
-4. Suitable Crops: What crops would thrive in this soil.
-
-Keep it simple and actionable.`;
+      const systemPrompt = `You are an agriculture expert. 
+Analyze the soil based on the input and return a JSON object with:
+{
+  "moisture": number (percentage 0-100),
+  "pH": number (scale 0-14),
+  "nutrients": { "N": number (0-100), "P": number (0-100), "K": number (0-100) },
+  "analysis": "A detailed markdown format report including Condition, Problems, Recommendations, and Suitable Crops."
+}
+IMPORTANT: Output ONLY the JSON object. Do not include any other text.`;
 
       const userContent = [];
 
@@ -43,11 +42,13 @@ Keep it simple and actionable.`;
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userContent },
         ],
-        max_tokens: 1024,
-        temperature: 0.7,
+        max_tokens: 1500,
+        temperature: 0.5, // Lower temperature for more consistent JSON
+        response_format: { type: 'json_object' }
       });
 
-      return response.choices[0].message.content;
+      const content = response.choices[0].message.content;
+      return JSON.parse(content);
     } catch (error) {
       console.error('Groq Soil Analysis error:', error.message || error);
       throw error;

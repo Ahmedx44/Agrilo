@@ -1,4 +1,3 @@
-import 'package:agrilo/core/theme/app_colors.dart';
 import 'package:agrilo/features/soil/cubit/soil_history_cubit.dart';
 import 'package:agrilo/features/soil/cubit/soil_history_state.dart';
 import 'package:agrilo/features/soil/repository/soil_repository.dart';
@@ -33,13 +32,13 @@ class SoilHistoryView extends StatelessWidget {
       body: BlocBuilder<SoilHistoryCubit, SoilHistoryState>(
         builder: (context, state) {
           if (state.status == SoilHistoryStatus.loading || state.status == SoilHistoryStatus.initial) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary));
           } else if (state.status == SoilHistoryStatus.failure) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, color: AppColors.error, size: 64),
+                   Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 64),
                   const SizedBox(height: 16),
                   Text(state.errorMessage ?? 'Failed to load history'),
                 ],
@@ -48,16 +47,19 @@ class SoilHistoryView extends StatelessWidget {
           }
 
           if (state.history.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
                 'No past soil scans found.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                  fontSize: 16,
+                ),
               ),
             );
           }
 
           return RefreshIndicator(
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             backgroundColor: Theme.of(context).colorScheme.surface,
             onRefresh: () => context.read<SoilHistoryCubit>().loadHistory(),
             child: ListView.separated(
@@ -78,8 +80,18 @@ class SoilHistoryView extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.primary.withAlpha(20), width: 1),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,9 +101,19 @@ class SoilHistoryView extends StatelessWidget {
                         children: [
                           Text(
                             formattedDate,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 14,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
                           ),
-                          const Icon(Icons.history_rounded, size: 20, color: AppColors.primary),
+                          Icon(
+                            Icons.history_rounded,
+                            size: 20,
+                            color: Theme.of(context).brightness == Brightness.light
+                                ? const Color(0xFF6B8E23)
+                                : Theme.of(context).colorScheme.primary,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -121,8 +143,21 @@ class SoilHistoryView extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+              ),
+            ),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
           ],
         ),
       ],

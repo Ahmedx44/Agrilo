@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:agrilo/core/theme/app_colors.dart';
 import 'package:agrilo/features/soil/cubit/soil_cubit.dart';
 import 'package:agrilo/features/soil/cubit/soil_state.dart';
 import 'package:agrilo/features/soil/repository/soil_repository.dart';
@@ -9,7 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SoilAnalysisPage extends StatelessWidget {
-  const SoilAnalysisPage({super.key});
+  const SoilAnalysisPage({super.key, this.onSuccess});
+  final VoidCallback? onSuccess;
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +17,14 @@ class SoilAnalysisPage extends StatelessWidget {
       create: (context) => SoilCubit(
         repository: context.read<SoilRepository>(),
       ),
-      child: const SoilAnalysisView(),
+      child: SoilAnalysisView(onSuccess: onSuccess),
     );
   }
 }
 
 class SoilAnalysisView extends StatefulWidget {
-  const SoilAnalysisView({super.key});
+  const SoilAnalysisView({super.key, this.onSuccess});
+  final VoidCallback? onSuccess;
 
   @override
   State<SoilAnalysisView> createState() => _SoilAnalysisViewState();
@@ -59,8 +60,9 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
         listener: (context, state) {
           if (state.status == SoilStatus.success) {
             setState(() {
-              _selectedImage = null; // Reset on success to invite new scans
+              _selectedImage = null;
             });
+            widget.onSuccess?.call();
           }
         },
         builder: (context, state) {
@@ -71,7 +73,7 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
               children: [
                 const Text(
                   'Upload a clear image of your soil to get AI-powered insights and nutrient breakdowns.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 40),
@@ -84,17 +86,31 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
                   child: Container(
                     height: 250,
                     decoration: BoxDecoration(
-                      color: AppColors.cardBackground,
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(32),
                       border: Border.all(
-                        color: _selectedImage != null ? AppColors.primary : AppColors.primary.withAlpha(50),
+                        color: _selectedImage != null
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withOpacity(0.1),
                         width: 2,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: _selectedImage != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(30),
-                            child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                            child: Image.file(
+                              _selectedImage!,
+                              fit: BoxFit.cover,
+                            ),
                           )
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -102,19 +118,24 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
                               Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withAlpha(20),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withOpacity(0.1),
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.add_a_photo_outlined,
-                                  color: AppColors.primary,
+                                  color: Theme.of(context).colorScheme.primary,
                                   size: 40,
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              const Text(
+                              Text(
                                 'Tap to select an image',
-                                style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
@@ -122,19 +143,34 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
                 ),
                 const SizedBox(height: 48),
                 ElevatedButton(
-                  onPressed: (_selectedImage == null || state.status == SoilStatus.loading) ? null : _analyze,
+                  onPressed:
+                      (_selectedImage == null ||
+                          state.status == SoilStatus.loading)
+                      ? null
+                      : _analyze,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: AppColors.primary,
-                    disabledBackgroundColor: AppColors.cardBackground,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    disabledBackgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.1),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
                   child: state.status == SoilStatus.loading
-                      ? const CircularProgressIndicator(color: Colors.black)
+                      ? CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        )
                       : Text(
                           'Analyze Now',
                           style: TextStyle(
                             fontSize: 18,
-                            color: _selectedImage == null ? Colors.grey : Colors.black,
+                            color: _selectedImage == null
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.4)
+                                : Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -150,7 +186,7 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
   void _showPickerOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.cardBackground,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -160,7 +196,10 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.camera_alt_outlined, color: Colors.white),
+                leading: Icon(
+                  Icons.camera_alt_outlined,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 title: const Text('Take a Photo'),
                 onTap: () {
                   Navigator.of(context).pop();
@@ -168,7 +207,10 @@ class _SoilAnalysisViewState extends State<SoilAnalysisView> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library_outlined, color: Colors.white),
+                leading: Icon(
+                  Icons.photo_library_outlined,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 title: const Text('Choose from Gallery'),
                 onTap: () {
                   Navigator.of(context).pop();

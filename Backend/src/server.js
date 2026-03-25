@@ -1,26 +1,9 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const http = require('http');
-const { Server } = require('socket.io');
 const app = require('./app');
-const socketService = require('./services/socket.service');
 
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
-
-// Create HTTP server
-const server = http.createServer(app);
-
-// Initialize Socket.io
-const io = new Server(server, {
-  cors: {
-    origin: '*', // Adjust for production
-    methods: ['GET', 'POST']
-  }
-});
-
-// Setup Socket.io logic
-socketService.init(io);
 
 const os = require('os');
 
@@ -28,13 +11,13 @@ const os = require('os');
 mongoose.connect(MONGODB_URI)
   .then(() => {
     console.info('Connected to MongoDB');
-    // Start listening on the HTTP server (not the express app)
-    server.listen(PORT, '0.0.0.0', () => {
-      console.info(`\n🚀 Server is running on port ${PORT}\n`);
-      
+    // Start listening
+    app.listen(PORT, '0.0.0.0', () => {
+      console.info(`\n Server is running on port ${PORT}\n`);
+
       console.info('Access the API on your network at the following addresses:');
       console.info(`- Localhost: http://localhost:${PORT}`);
-      
+
       const nets = os.networkInterfaces();
       for (const name of Object.keys(nets)) {
         for (const net of nets[name]) {

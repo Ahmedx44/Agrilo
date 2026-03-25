@@ -4,9 +4,7 @@ const morgan = require('morgan');
 const path = require('path');
 const authRoutes = require('./routes/auth.routes');
 const soilRoutes = require('./routes/soil.routes');
-const chatRoutes = require('./routes/chat.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
-const recommendationRoutes = require('./routes/recommendation.routes');
 const { swaggerUi, specs } = require('./utils/swagger');
 
 const app = express();
@@ -24,9 +22,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/soil', soilRoutes);
-app.use('/api/chat', chatRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/recommendations', recommendationRoutes);
 
 // Root route
 app.get('/', (req, res) => {

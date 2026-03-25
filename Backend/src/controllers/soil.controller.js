@@ -1,6 +1,5 @@
 const SoilRecord = require('../models/soil_record.model');
 const GroqService = require('../services/groq.service');
-const socketService = require('../services/socket.service');
 const path = require('path');
 const fs = require('fs');
 
@@ -15,10 +14,9 @@ const analyzeSoil = async (req, res) => {
       mimeType = req.file.mimetype;
     }
 
-    // Call Groq (Llama Vision) for analysis
+    // Call Groq 
     const analysisResponse = await GroqService.analyzeSoil(textInput, imageBuffer, mimeType);
 
-    // Create a new soil record
     const newRecord = new SoilRecord({
       userId: req.userId,
       textInput: textInput,
@@ -27,28 +25,26 @@ const analyzeSoil = async (req, res) => {
         path: req.file.path
       } : null,
       analysisResult: {
-        aiResponse: analysisResponse
+        aiResponse: analysisResponse.analysis || "No detailed report provided."
       },
-      // Random mock indicators for demonstration (could be updated later)
       indicators: {
-        moisture: Math.floor(Math.random() * 100),
-        pH: (Math.random() * 4 + 4).toFixed(1), // pH between 4 and 8
+        moisture: analysisResponse.moisture || 0,
+        pH: analysisResponse.pH || 7.0,
         nutrients: {
-          N: Math.floor(Math.random() * 100),
-          P: Math.floor(Math.random() * 100),
-          K: Math.floor(Math.random() * 100)
+          N: analysisResponse.nutrients?.N || 0,
+          P: analysisResponse.nutrients?.P || 0,
+          K: analysisResponse.nutrients?.K || 0
         }
       }
     });
 
     await newRecord.save();
 
-    // Notify user via socket (real-time notification)
-    socketService.sendNotification(req.userId, "Soil analysis complete! Check your results.");
+    // Record saved successfully
 
     res.status(200).json({
-       message: 'Analysis complete.',
-       data: newRecord
+      message: 'Analysis complete.',
+      data: newRecord
     });
   } catch (error) {
     console.error('Soil analysis controller error:', error);
