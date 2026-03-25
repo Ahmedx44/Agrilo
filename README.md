@@ -26,33 +26,6 @@ Agrilo/
 - 📊 **Dashboard** — Summary of all soil tests, averages, and latest scan
 - 📸 **Soil Analysis** — Upload soil images via camera or gallery for AI analysis
 - 📜 **Scan History** — Browse all past soil analysis records
-- 🌙 **Dark / Light Mode** — Persistent theme toggle in Settings
-- 🚪 **Account Management** — Logout from the Settings page
-- ⚡ **Real-time notifications** — Socket.IO integration
-
----
-
-## 🛠️ Tech Stack
-
-### Backend
-| Tech | Purpose |
-|------|---------|
-| Node.js + Express | REST API server |
-| MongoDB Atlas + Mongoose | Database |
-| JWT | Authentication |
-| Multer | Image file uploads |
-| Groq SDK (Llama Vision) | AI soil image analysis |
-| Socket.IO | Real-time notifications |
-
-### Mobile
-| Tech | Purpose |
-|------|---------|
-| Flutter | Cross-platform mobile UI |
-| flutter_bloc + Cubit | State management |
-| Dio | HTTP networking |
-| shared_preferences | Local persistence |
-| image_picker | Camera / Gallery access |
-| intl | Date formatting |
 
 ---
 
@@ -61,9 +34,9 @@ Agrilo/
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 18
-- [Flutter SDK](https://flutter.dev/) >= 3.19
-- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account (free tier works)
-- [Groq API Key](https://console.groq.com/) (free, no credit card)
+- [Flutter SDK](https://flutter.dev/)
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account 
+- [Groq API Key](https://console.groq.com/)
 
 ---
 
@@ -132,29 +105,13 @@ flutter pub get
 
 #### Configure the API base URL
 
-Open `lib/app/view/app.dart` and update `_getBaseUrl()`:
+Open `lib/app/view/app.dart` and update `the baseUrl properties for ApiClient.create`:
 
-```dart
-String _getBaseUrl() {
-  if (kIsWeb) return 'http://localhost:4000';
-  if (Platform.isAndroid) return 'http://YOUR_NETWORK_IP:4000';
-  return 'http://YOUR_NETWORK_IP:4000'; // iOS physical device
-}
-```
-
-> **iOS Simulator**: use `http://127.0.0.1:4000`  
-> **Android Emulator**: use `http://10.0.2.2:4000`  
-> **Physical device** (iOS or Android): use your Mac's LAN IP shown in the backend startup log
 
 #### Run the app:
 
 ```bash
-# iOS Simulator
 flutter run --flavor development -t lib/main_development.dart
-
-# Android Emulator or device
-flutter run --flavor development -t lib/main_development.dart
-```
 
 ---
 
@@ -184,12 +141,6 @@ flutter run --flavor development -t lib/main_development.dart
 
 ---
 
-## 🤖 AI Fallback
-
-If the Groq API is unavailable or quota is exceeded, the backend automatically returns a realistic simulated soil analysis so the app continues to function end-to-end during development.
-
----
-
 ## 📁 Mobile App Structure
 
 ```
@@ -209,36 +160,3 @@ lib/
     └── settings/           # Settings page (theme, logout)
 ```
 
----
-
-## 🐛 Common Issues
-
-**MongoDB connection fails on start:**
-> Go to MongoDB Atlas → Network Access → Add your current IP or use `0.0.0.0/0` for development.
-
-**`flutter pub add image_picker` seems stuck:**
-> Kill it and run `flutter pub get` instead. The package is already in `pubspec.yaml`.
-
-**Android build fails with Kotlin version error:**
-> Ensure `android/settings.gradle.kts` has `id("org.jetbrains.kotlin.android") version "2.2.10"`.
-
-**App shows 401 on dashboard after login:**
-> The auth token interceptor in `ApiClient` handles this automatically. Check that `StorageService.init()` is called before `runApp()`.
-
----
-
-## 📄 License
-
-MIT License — feel free to use, modify, and distribute.
-
----
-
-## 🙏 Acknowledgements
-
-- [Groq](https://groq.com/) — for blazing-fast free AI inference
-- [Flutter](https://flutter.dev/) — cross-platform UI toolkit
-- [MongoDB Atlas](https://www.mongodb.com/) — cloud database
-
----
-
-*Built with ❤️ using Flutter + Node.js + Groq AI*

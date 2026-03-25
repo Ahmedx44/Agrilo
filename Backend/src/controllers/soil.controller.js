@@ -1,7 +1,5 @@
 const SoilRecord = require('../models/soil_record.model');
 const GroqService = require('../services/groq.service');
-const path = require('path');
-const fs = require('fs');
 
 const analyzeSoil = async (req, res) => {
   try {
@@ -10,7 +8,7 @@ const analyzeSoil = async (req, res) => {
     let mimeType = null;
 
     if (req.file) {
-      imageBuffer = fs.readFileSync(req.file.path);
+      imageBuffer = req.file.buffer;
       mimeType = req.file.mimetype;
     }
 
@@ -20,10 +18,7 @@ const analyzeSoil = async (req, res) => {
     const newRecord = new SoilRecord({
       userId: req.userId,
       textInput: textInput,
-      image: req.file ? {
-        url: `/uploads/${req.file.filename}`,
-        path: req.file.path
-      } : null,
+      image: null, // Note: Images are no longer saved to disk
       analysisResult: {
         aiResponse: analysisResponse.analysis || "No detailed report provided."
       },
