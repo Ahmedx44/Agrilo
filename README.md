@@ -143,21 +143,4 @@ flutter run --flavor development -t lib/main_development.dart
 
 ## 📁 Mobile App Structure
 
-```
-lib/
-├── app/                    # Root app widget & routing
-├── core/
-│   ├── services/           # ApiClient, StorageService, ToastService
-│   └── theme/              # AppColors, AppTheme, ThemeCubit
-└── features/
-    ├── auth/               # Auth cubit & repository
-    ├── signin/             # Sign in page & cubit
-    ├── signup/             # Sign up page & cubit
-    ├── splash/             # Splash screen
-    ├── home/               # Bottom navigation host
-    ├── dashboard/          # Dashboard page, cubit, state
-    ├── soil/               # Soil analysis & history
-    └── settings/           # Settings page (theme, logout)
-```
 
----
