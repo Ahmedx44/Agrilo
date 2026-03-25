@@ -160,3 +160,4 @@ lib/
     └── settings/           # Settings page (theme, logout)
 ```
 
+---
