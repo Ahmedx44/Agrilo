@@ -1,6 +1,6 @@
 # 🌱 Agrilo — AI-Powered Soil Health Monitor
 
-Agrilo is a full-stack mobile application that helps gardeners and farmers monitor soil health using AI. Users can upload soil images, receive instant AI-powered analysis, track historical data, and get crop recommendations — all from a premium Flutter mobile app.
+Agrilo is a full-stack mobile application that helps gardeners and farmers monitor soil health using AI. Users can upload soil images, receive instant AI-powered analysis.
 
 ---
 
