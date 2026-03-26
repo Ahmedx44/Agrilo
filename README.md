@@ -4,9 +4,13 @@ Agrilo is a full-stack mobile application that helps gardeners and farmers monit
 
 ---
 
+
+https://github.com/user-attachments/assets/50da01e1-3d07-4cc9-b11d-4a8fd70d93bc
+
+
 ## 📱 Screenshots
 
-> Dashboard · Soil Scan · History · Settings
+
 
 ---
 
