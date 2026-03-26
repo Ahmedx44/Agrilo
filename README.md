@@ -141,6 +141,4 @@ flutter run --flavor development -t lib/main_development.dart
 
 ---
 
-## 📁 Mobile App Structure
-
 
