@@ -20,7 +20,6 @@ const getDashboardData = async (req, res) => {
       });
     }
 
-    // Compute averages across all records
     const avgMoisture = Math.round(
       allRecords.reduce((sum, r) => sum + (r.indicators?.moisture || 0), 0) / totalTests
     );
@@ -31,10 +30,8 @@ const getDashboardData = async (req, res) => {
     const avgP = Math.round(allRecords.reduce((sum, r) => sum + (r.indicators?.nutrients?.P || 0), 0) / totalTests);
     const avgK = Math.round(allRecords.reduce((sum, r) => sum + (r.indicators?.nutrients?.K || 0), 0) / totalTests);
 
-    // Latest scan
+  
     const latest = allRecords[0];
-
-    // Last 7 records for mini history
     const history = allRecords.slice(0, 7).map(r => ({
       date: r.createdAt,
       moisture: r.indicators?.moisture,

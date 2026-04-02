@@ -3,8 +3,8 @@ const Groq = require('groq-sdk');
 class GroqService {
   constructor() {
     this.groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    this.visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct'; // Llama 4 Scout with vision
-    this.textModel = 'llama-3.3-70b-versatile'; // fallback for text-only
+    this.visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
+    this.textModel = 'llama-3.3-70b-versatile'; 
   }
 
   async analyzeSoil(textInput, imageBuffer, mimeType) {
@@ -43,7 +43,7 @@ IMPORTANT: Output ONLY the JSON object. Do not include any other text.`;
           { role: 'user', content: userContent },
         ],
         max_tokens: 1500,
-        temperature: 0.5, // Lower temperature for more consistent JSON
+        temperature: 0.5,
         response_format: { type: 'json_object' }
       });
 

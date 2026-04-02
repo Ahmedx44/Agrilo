@@ -18,7 +18,7 @@ const analyzeSoil = async (req, res) => {
     const newRecord = new SoilRecord({
       userId: req.userId,
       textInput: textInput,
-      image: null, // Note: Images are no longer saved to disk
+      image: null,
       analysisResult: {
         aiResponse: analysisResponse.analysis || "No detailed report provided."
       },
@@ -34,8 +34,6 @@ const analyzeSoil = async (req, res) => {
     });
 
     await newRecord.save();
-
-    // Record saved successfully
 
     res.status(200).json({
       message: 'Analysis complete.',
